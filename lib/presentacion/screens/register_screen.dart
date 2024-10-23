@@ -1,28 +1,93 @@
+import 'package:eventify/presentacion/screens/register_from_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController _nameController = TextEditingController();
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
-    String userType = 'Usuario Normal';
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
 
+class _RegisterScreenState extends State<RegisterScreen> {
+  // Controladores de TextField y demás variables
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  String userType = 'u'; // 'u' para Usuario por defecto
+  bool _passwordVisible = false; // Controla la visibilidad de la contraseña
+
+  // Función para registrar al usuario
+  Future<void> _registerUser() async {
+    String name = _nameController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Las contraseñas no coinciden')),
+      );
+      return;
+    }
+
+    final url = Uri.parse('https://eventify.allsites.es/public/api/register');
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+          'c_password': confirmPassword,
+          'role': userType,
+        }),
+      );
+
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200 && responseData['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Registro exitoso. Revisa tu correo para verificar la cuenta.')),
+        );
+        Navigator.pop(context); // Navega de vuelta al LoginScreen
+      } else {
+        // Manejo de errores detallado
+        String errorMessage = responseData['message'];
+        if (responseData['data'] != null) {
+          Map<String, dynamic> errors = responseData['data'];
+          errors.forEach((key, value) {
+            errorMessage += "\n$key: ${value.join(', ')}";
+          });
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $errorMessage')),
+        );
+      }
+    } catch (e) {
+      print('Exception: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Hubo un error, intenta de nuevo más tarde')),
+      );
+    }
+  }
+
+  // Widget Build
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black87,
       body: Stack(
         children: [
-          const Text(
-            'Registro',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          // Fondo animado
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -45,125 +110,34 @@ class RegisterScreen extends StatelessWidget {
             ),
           ),
           Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 16.0),
-                  TextField(
-                    controller: _nameController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Nombre Completo',
-                      labelStyle: const TextStyle(color: Colors.white70),
-                      filled: true,
-                      fillColor: Colors.black45,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      prefixIcon:
-                          const Icon(Icons.person, color: Colors.white70),
-                    ),
+            child: Column(
+              children: [
+                const Spacer(),
+                Flexible(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 250,
+                    height: 250,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 16.0),
-                  TextField(
-                    controller: _emailController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Correo Electrónico',
-                      labelStyle: const TextStyle(color: Colors.white70),
-                      filled: true,
-                      fillColor: Colors.black45,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      prefixIcon: const Icon(Icons.mail, color: Colors.white70),
-                    ),
+                ),
+                const SizedBox(height: 32),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                  child: RegisterForm(),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    '¿Ya tienes una cuenta? Inicia sesión',
+                    style: TextStyle(color: Colors.white),
                   ),
-                  const SizedBox(height: 16.0),
-                  TextField(
-                    controller: _passwordController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Contraseña',
-                      labelStyle: const TextStyle(color: Colors.white70),
-                      filled: true,
-                      fillColor: Colors.black45,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      prefixIcon: const Icon(Icons.lock, color: Colors.white70),
-                      suffixIcon:
-                          const Icon(Icons.visibility, color: Colors.white70),
-                    ),
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 16.0),
-                  DropdownButtonFormField<String>(
-                    value: userType,
-                    dropdownColor: Colors.black54,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.black45,
-                      labelText: 'Tipo de Usuario',
-                      labelStyle: const TextStyle(color: Colors.white70),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    items: <String>['Usuario Normal', 'Organizador']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      if (newValue != null) {
-                        userType = newValue;
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 24.0),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        String name = _nameController.text;
-                        String email = _emailController.text;
-                        String password = _passwordController.text;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Registro con email: $email')),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.pinkAccent,
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                      ),
-                      child: const Text('Registrarse',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Volver a Login',
-                        style: TextStyle(color: Colors.pinkAccent)),
-                  ),
-                  const SizedBox(height: 24.0),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
           ),
         ],
