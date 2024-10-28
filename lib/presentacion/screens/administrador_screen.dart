@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_slidable/flutter_slidable.dart'; // Importa la clase DesactivarServices
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class AdministradorScreen extends ConsumerStatefulWidget {
   static const String name = 'administrador_screen';
@@ -46,7 +46,7 @@ class _AdministradorScreenState extends ConsumerState<AdministradorScreen> {
   }
 
   void _editarUsuario(int userId) {
-    // Implementa la lógica para editar al usuario
+    context.go('/editar', extra: userId);
   }
 
   @override
@@ -58,12 +58,10 @@ class _AdministradorScreenState extends ConsumerState<AdministradorScreen> {
       appBar: AppBar(
         title: Text('Panel de Administrador'),
         backgroundColor: Colors.pinkAccent,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: _logout,
-          ),
-        ],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: _logout,
+        ),
       ),
       body: Stack(
         children: [

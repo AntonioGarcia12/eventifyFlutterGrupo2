@@ -48,6 +48,8 @@ class ActivarServices {
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
+          'Content-Type':
+              'application/json', // Asegurarse de que el tipo de contenido sea JSON
         },
         body: jsonEncode({
           'id': userId,
@@ -62,6 +64,8 @@ class ActivarServices {
           SnackBar(content: Text('Usuario activado correctamente.')),
         );
       } else {
+        print('Error al activar el usuario: ${response.reasonPhrase}');
+        print('Detalles del error: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
@@ -69,6 +73,7 @@ class ActivarServices {
         );
       }
     } catch (e) {
+      print('Hubo un error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Hubo un error: $e')),
       );

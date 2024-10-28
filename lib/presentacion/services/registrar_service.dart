@@ -18,27 +18,44 @@ class RegisterServiceFormState extends State<RegistrarService> {
   String userType = 'u'; // 'u' para Usuario por defecto
   bool _passwordVisible = false;
 
+  // Variables para almacenar mensajes de error
+  String? _nameError;
+  String? _emailError;
+  String? _passwordError;
+  String? _confirmPasswordError;
+  String? _userTypeError;
+
   Future<void> _registerUser() async {
     String name = _nameController.text.trim();
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
     String confirmPassword = _confirmPasswordController.text.trim();
 
-    // Validación local
-    if (name.isEmpty ||
-        email.isEmpty ||
-        password.isEmpty ||
-        confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Todos los campos son obligatorios')),
-      );
-      return;
-    }
+    setState(() {
+      // Validación local de los campos y actualización de mensajes de error
+      _nameError = name.isEmpty ? 'El nombre es obligatorio' : null;
+      _emailError =
+          email.isEmpty ? 'El correo electrónico es obligatorio' : null;
+      _passwordError = password.isEmpty ? 'La contraseña es obligatoria' : null;
+      _confirmPasswordError = confirmPassword.isEmpty
+          ? 'Confirmar la contraseña es obligatorio'
+          : null;
+      _userTypeError =
+          userType.isEmpty ? 'El rol de usuario es obligatorio' : null;
 
-    if (password != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Las contraseñas no coinciden')),
-      );
+      if (password.isNotEmpty &&
+          confirmPassword.isNotEmpty &&
+          password != confirmPassword) {
+        _confirmPasswordError = 'Las contraseñas no coinciden';
+      }
+    });
+
+    // Si hay algún error, no continuar con el registro
+    if (_nameError != null ||
+        _emailError != null ||
+        _passwordError != null ||
+        _confirmPasswordError != null ||
+        _userTypeError != null) {
       return;
     }
 
@@ -65,17 +82,25 @@ class RegisterServiceFormState extends State<RegistrarService> {
       // Manejar la respuesta en función del código de estado
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (responseData['success'] == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(
-                    'Registro exitoso. Revisa tu correo para verificar la cuenta.')),
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Registro exitoso'),
+              content: Text('Revisa tu correo para verificar la cuenta.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: Text('Aceptar'),
+                ),
+              ],
+            ),
           );
-          Navigator.pop(context);
         } else {
           String errorMessage = responseData['message'];
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $errorMessage')),
-          );
+          _showErrorDialog('Error', errorMessage);
         }
       } else if (response.statusCode == 400) {
         // El servidor devuelve un 400 para errores de validación
@@ -93,23 +118,30 @@ class RegisterServiceFormState extends State<RegistrarService> {
           errorMessage += "\n${errorMessages.join('\n')}";
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $errorMessage')),
-        );
+        _showErrorDialog('Error', errorMessage);
       } else {
-        // Otro tipo de error (500, 404, etc.)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Error: ${response.statusCode} - ${responseData['message']}')),
-        );
+        _showErrorDialog('Error',
+            'Error: ${response.statusCode} - ${responseData['message']}');
       }
     } catch (e) {
-      print('Exception: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hubo un error, intenta de nuevo más tarde')),
-      );
+      _showErrorDialog('Error', 'Hubo un error, intenta de nuevo más tarde');
     }
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Aceptar'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -121,12 +153,13 @@ class RegisterServiceFormState extends State<RegistrarService> {
           controller: _nameController,
           decoration: InputDecoration(
             labelText: 'Nombre Completo',
-            labelStyle: TextStyle(color: Colors.white),
+            labelStyle: const TextStyle(color: Colors.white),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
+            errorText: _nameError,
           ),
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
         const SizedBox(height: 16),
         TextField(
@@ -134,12 +167,13 @@ class RegisterServiceFormState extends State<RegistrarService> {
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             labelText: 'Correo Electrónico',
-            labelStyle: TextStyle(color: Colors.white),
+            labelStyle: const TextStyle(color: Colors.white),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
+            errorText: _emailError,
           ),
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
         const SizedBox(height: 16),
         TextField(
@@ -147,7 +181,7 @@ class RegisterServiceFormState extends State<RegistrarService> {
           obscureText: !_passwordVisible,
           decoration: InputDecoration(
             labelText: 'Contraseña',
-            labelStyle: TextStyle(color: Colors.white),
+            labelStyle: const TextStyle(color: Colors.white),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
@@ -162,8 +196,9 @@ class RegisterServiceFormState extends State<RegistrarService> {
                 });
               },
             ),
+            errorText: _passwordError,
           ),
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
         const SizedBox(height: 16),
         TextField(
@@ -171,10 +206,11 @@ class RegisterServiceFormState extends State<RegistrarService> {
           obscureText: true,
           decoration: InputDecoration(
             labelText: 'Confirmar Contraseña',
-            labelStyle: TextStyle(color: Colors.white),
+            labelStyle: const TextStyle(color: Colors.white),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
+            errorText: _confirmPasswordError,
           ),
           style: TextStyle(color: Colors.white),
         ),
@@ -182,7 +218,7 @@ class RegisterServiceFormState extends State<RegistrarService> {
         DropdownButtonFormField<String>(
           value: userType,
           dropdownColor: Colors.black87,
-          items: [
+          items: const [
             DropdownMenuItem(
               value: 'u',
               child: Text(
@@ -204,11 +240,12 @@ class RegisterServiceFormState extends State<RegistrarService> {
             });
           },
           decoration: InputDecoration(
-            labelText: 'Rol de Usuario',
+            labelText: 'Tipo de usuario',
             labelStyle: TextStyle(color: Colors.white),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
+            errorText: _userTypeError,
           ),
         ),
         const SizedBox(height: 24),

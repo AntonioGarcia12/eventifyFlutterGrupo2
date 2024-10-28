@@ -1,4 +1,3 @@
-import 'package:eventify/presentacion/screens/recuperar_password_screen.dart';
 import 'package:eventify/presentacion/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -80,12 +79,12 @@ class LoginServiceState extends State<LoginService> {
           if (role == 'a') {
             context.go('/admin');
           } else if (role == 'o') {
-            // Aquí podrías agregar la pantalla para el organizador
+            context.go('/organizador');
             setState(() {
               _generalError = 'Inicio de sesión como Organizador';
             });
           } else {
-            // Aquí podrías agregar la pantalla para el usuario normal
+            context.go('/normal');
             setState(() {
               _generalError = 'Inicio de sesión como Usuario';
             });
@@ -199,16 +198,6 @@ class LoginServiceState extends State<LoginService> {
             _generalError!,
             style: TextStyle(color: Colors.white),
           ),
-        TextButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => RecuperarPasswordScreen()));
-          },
-          child: const Text('Olvidó su contraseña?',
-              style: TextStyle(color: Colors.white)),
-        ),
         TextButton(
           onPressed: () {
             Navigator.push(context,
