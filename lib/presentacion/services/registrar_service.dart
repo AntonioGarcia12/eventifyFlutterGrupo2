@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class RegisterForm extends StatefulWidget {
+class RegistrarService extends StatefulWidget {
   @override
-  State<RegisterForm> createState() => RegisterFormState();
+  State<RegistrarService> createState() => RegisterServiceFormState();
+  static const String name = 'registrar_services';
+  const RegistrarService({super.key});
 }
 
-class RegisterFormState extends State<RegisterForm> {
+class RegisterServiceFormState extends State<RegistrarService> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -22,6 +24,17 @@ class RegisterFormState extends State<RegisterForm> {
     String password = _passwordController.text.trim();
     String confirmPassword = _confirmPasswordController.text.trim();
 
+    // Validación local
+    if (name.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Todos los campos son obligatorios')),
+      );
+      return;
+    }
+
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Las contraseñas no coinciden')),
@@ -35,6 +48,7 @@ class RegisterFormState extends State<RegisterForm> {
         url,
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: jsonEncode({
           'name': name,
@@ -45,24 +59,49 @@ class RegisterFormState extends State<RegisterForm> {
         }),
       );
 
+      // Parsear la respuesta
       final responseData = jsonDecode(response.body);
-      if (response.statusCode == 200 && responseData['success'] == true) {
+
+      // Manejar la respuesta en función del código de estado
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (responseData['success'] == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Registro exitoso. Revisa tu correo para verificar la cuenta.')),
+          );
+          Navigator.pop(context);
+        } else {
+          String errorMessage = responseData['message'];
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $errorMessage')),
+          );
+        }
+      } else if (response.statusCode == 400) {
+        // El servidor devuelve un 400 para errores de validación
+        String errorMessage = responseData.containsKey('message')
+            ? responseData['message']
+            : 'Error desconocido';
+
+        // Revisar si hay errores detallados
+        if (responseData.containsKey('data')) {
+          Map<String, dynamic> errors = responseData['data'];
+          List<String> errorMessages = [];
+          errors.forEach((key, value) {
+            errorMessages.add("$key: ${value.join(', ')}");
+          });
+          errorMessage += "\n${errorMessages.join('\n')}";
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $errorMessage')),
+        );
+      } else {
+        // Otro tipo de error (500, 404, etc.)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  'Registro exitoso. Revisa tu correo para verificar la cuenta.')),
-        );
-        Navigator.pop(context);
-      } else {
-        String errorMessage = responseData['message'];
-        if (responseData['data'] != null) {
-          Map<String, dynamic> errors = responseData['data'];
-          errors.forEach((key, value) {
-            errorMessage += "\n$key: ${value.join(', ')}";
-          });
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $errorMessage')),
+                  'Error: ${response.statusCode} - ${responseData['message']}')),
         );
       }
     } catch (e) {
