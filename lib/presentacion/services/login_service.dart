@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService extends StatefulWidget {
   const LoginService({super.key});
+  static const String name = 'login_service';
 
   @override
   State<LoginService> createState() => LoginServiceState();
@@ -26,24 +27,23 @@ class LoginServiceState extends State<LoginService> {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
 
-    // Limpiar los mensajes de error
     setState(() {
       _emailError = null;
       _passwordError = null;
       _generalError = null;
     });
 
-    // Validar si los campos de correo y contraseña están vacíos
+    // Validar si los campos están vacíos
     if (email.isEmpty) {
       setState(() {
-        _emailError = 'El campo de correo no puede estar vacío';
+        _emailError = 'El correo es obligatorio';
       });
       return;
     }
 
     if (password.isEmpty) {
       setState(() {
-        _passwordError = 'El campo de contraseña no puede estar vacío';
+        _passwordError = 'La contraseña es obligatoria';
       });
       return;
     }
@@ -62,11 +62,9 @@ class LoginServiceState extends State<LoginService> {
         }),
       );
 
-      // Asegúrate de que la respuesta sea un JSON válido
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200 && responseData['success'] == true) {
-        // Validar si data y role están presentes en la respuesta
         if (responseData['data'] != null &&
             responseData['data']['role'] != null) {
           String role = responseData['data']['role'];
@@ -80,36 +78,32 @@ class LoginServiceState extends State<LoginService> {
             context.go('/admin');
           } else if (role == 'o') {
             context.go('/organizador');
-            setState(() {
-              _generalError = 'Inicio de sesión como Organizador';
-            });
           } else {
             context.go('/normal');
-            setState(() {
-              _generalError = 'Inicio de sesión como Usuario';
-            });
           }
         } else {
           setState(() {
             _generalError = 'Error: Información de usuario incompleta';
           });
         }
+      } else if (response.statusCode == 401) {
+        // Manejo específico del error Unauthorized
+        setState(() {
+          _generalError = 'La contraseña o el gmail son incorrectos';
+        });
       } else {
-        // Manejo de errores detallado desde la respuesta de la API
         String errorMessage = responseData.containsKey('message')
             ? responseData['message']
             : 'Error inesperado en el inicio de sesión.';
 
         if (responseData.containsKey('errors')) {
           if (responseData['errors'].containsKey('email')) {
-            errorMessage = responseData['errors']['email'][0];
             setState(() {
-              _emailError = errorMessage;
+              _emailError = responseData['errors']['email'][0];
             });
           } else if (responseData['errors'].containsKey('password')) {
-            errorMessage = responseData['errors']['password'][0];
             setState(() {
-              _passwordError = errorMessage;
+              _passwordError = responseData['errors']['password'][0];
             });
           }
         } else {
@@ -119,8 +113,6 @@ class LoginServiceState extends State<LoginService> {
         }
       }
     } catch (e) {
-      // Manejo de excepciones
-      print('Exception: $e');
       setState(() {
         _generalError = 'Hubo un error, intenta de nuevo más tarde';
       });
@@ -135,7 +127,7 @@ class LoginServiceState extends State<LoginService> {
         TextField(
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
-          style: TextStyle(color: Colors.white), // Color de texto normal
+          style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: 'Correo electrónico',
             hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
@@ -145,8 +137,6 @@ class LoginServiceState extends State<LoginService> {
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide(color: Colors.white),
             ),
-            errorStyle: TextStyle(
-                color: Colors.redAccent), // Mensajes de error en blanco
             errorText: _emailError,
           ),
         ),
@@ -154,7 +144,7 @@ class LoginServiceState extends State<LoginService> {
         TextField(
           controller: _passwordController,
           obscureText: !_passwordVisible,
-          style: TextStyle(color: Colors.white), // Color de texto normal
+          style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: 'Contraseña',
             hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
@@ -175,8 +165,6 @@ class LoginServiceState extends State<LoginService> {
                 });
               },
             ),
-            errorStyle: TextStyle(
-                color: Colors.redAccent), // Mensajes de error en blanco
             errorText: _passwordError,
           ),
         ),
@@ -196,15 +184,19 @@ class LoginServiceState extends State<LoginService> {
         if (_generalError != null)
           Text(
             _generalError!,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.redAccent),
           ),
         TextButton(
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => RegisterScreen()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => RegisterScreen()),
+            );
           },
-          child: const Text('Registrar nueva cuenta',
-              style: TextStyle(color: Colors.white)),
+          child: const Text(
+            'Registrar nueva cuenta',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );

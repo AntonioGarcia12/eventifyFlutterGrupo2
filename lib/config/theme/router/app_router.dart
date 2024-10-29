@@ -3,6 +3,7 @@ import 'package:eventify/presentacion/screens/editar_screen.dart';
 import 'package:eventify/presentacion/screens/login_screen.dart';
 import 'package:eventify/presentacion/screens/normal_screen.dart';
 import 'package:eventify/presentacion/screens/organizador_screen.dart';
+import 'package:eventify/presentacion/services/login_service.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(initialLocation: '/', routes: [
@@ -31,5 +32,10 @@ final appRouter = GoRouter(initialLocation: '/', routes: [
     path: '/organizador',
     name: OrganizadorScreen.name,
     builder: (context, state) => const OrganizadorScreen(),
+  ),
+  GoRoute(
+    path: '/login',
+    name: LoginService.name,
+    builder: (context, state) => const LoginService(),
   ),
 ]);
