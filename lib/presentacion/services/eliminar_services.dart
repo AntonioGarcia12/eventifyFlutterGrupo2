@@ -12,17 +12,17 @@ class EliminarServices {
     final bool? confirmDelete = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Confirmar Eliminación'),
-        content: Text(
+        title: const Text('Confirmar Eliminación'),
+        content: const Text(
             '¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('Cancelar'),
+            child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Eliminar'),
+            child: const Text('Eliminar'),
           ),
         ],
       ),
@@ -38,7 +38,7 @@ class EliminarServices {
 
       if (token == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
               content: Text('No se pudo obtener el token de autenticación')),
         );
         return;
@@ -61,11 +61,9 @@ class EliminarServices {
         ref.read(userProvider).eliminarUsuario(userId);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Usuario eliminado correctamente.')),
+          const SnackBar(content: Text('Usuario eliminado correctamente.')),
         );
       } else {
-        print('Error: ${response.statusCode}, Cuerpo: ${response.body}');
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(

@@ -15,7 +15,7 @@ class RegisterServiceFormState extends State<RegistrarService> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  String userType = 'u'; // 'u' para Usuario por defecto
+  String userType = 'u';
   bool _passwordVisible = false;
 
   // Variables para almacenar mensajes de error
@@ -85,15 +85,15 @@ class RegisterServiceFormState extends State<RegistrarService> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('Registro exitoso'),
-              content: Text('Revisa tu correo para verificar la cuenta.'),
+              title: const Text('Registro exitoso'),
+              content: const Text('Revisa tu correo para verificar la cuenta.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                     Navigator.pop(context);
                   },
-                  child: Text('Aceptar'),
+                  child: const Text('Aceptar'),
                 ),
               ],
             ),
@@ -137,7 +137,7 @@ class RegisterServiceFormState extends State<RegistrarService> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Aceptar'),
+            child: const Text('Aceptar'),
           ),
         ],
       ),
@@ -212,7 +212,7 @@ class RegisterServiceFormState extends State<RegistrarService> {
             ),
             errorText: _confirmPasswordError,
           ),
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
@@ -241,7 +241,7 @@ class RegisterServiceFormState extends State<RegistrarService> {
           },
           decoration: InputDecoration(
             labelText: 'Tipo de usuario',
-            labelStyle: TextStyle(color: Colors.white),
+            labelStyle: const TextStyle(color: Colors.white),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),

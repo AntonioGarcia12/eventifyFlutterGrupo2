@@ -12,7 +12,6 @@ class LoginScreen extends StatelessWidget {
       backgroundColor: Colors.black87,
       body: Stack(
         children: [
-          // Fondo animado
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -47,8 +46,8 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32.0),
                   child: LoginService(),
                 ),
                 const Spacer(),

@@ -11,16 +11,17 @@ class ActivarServices {
     final bool? confirmActivate = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Confirmar Activación'),
-        content: Text('¿Estás seguro de que deseas activar este usuario?'),
+        title: const Text('Confirmar Activación'),
+        content:
+            const Text('¿Estás seguro de que deseas activar este usuario?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('Cancelar'),
+            child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Activar'),
+            child: const Text('Activar'),
           ),
         ],
       ),
@@ -36,7 +37,7 @@ class ActivarServices {
 
       if (token == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
               content: Text('No se pudo obtener el token de autenticación')),
         );
         return;
@@ -61,11 +62,9 @@ class ActivarServices {
         ref.read(userProvider).actualizarEstadoUsuario(userId, true);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Usuario activado correctamente.')),
+          const SnackBar(content: Text('Usuario activado correctamente.')),
         );
       } else {
-        print('Error al activar el usuario: ${response.reasonPhrase}');
-        print('Detalles del error: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
@@ -73,7 +72,6 @@ class ActivarServices {
         );
       }
     } catch (e) {
-      print('Hubo un error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Hubo un error: $e')),
       );

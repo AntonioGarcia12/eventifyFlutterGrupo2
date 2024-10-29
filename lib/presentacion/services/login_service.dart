@@ -168,17 +168,19 @@ class LoginServiceState extends State<LoginService> {
             errorText: _passwordError,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         ElevatedButton(
           onPressed: _loginUser,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.pinkAccent,
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 52.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
           ),
-          child: const Text('Entrar', style: TextStyle(color: Colors.white)),
+          child: const Text('Iniciar sesión',
+              style: TextStyle(color: Colors.white)),
         ),
         const SizedBox(height: 16),
         if (_generalError != null)
