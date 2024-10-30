@@ -10,12 +10,6 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // Controladores de TextField y demás variables
-  // Controla la visibilidad de la contraseña
-
-  // Función para registrar al usuario
-
-  // Widget Build
   @override
   Widget build(BuildContext context) {
     return Scaffold(

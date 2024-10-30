@@ -31,7 +31,6 @@ class EditarServices {
       String? token = prefs.getString('token');
 
       if (token == null) {
-        print('Error: Token de autenticación no disponible');
         throw Exception('No se pudo obtener el token de autenticación');
       }
 
@@ -55,15 +54,11 @@ class EditarServices {
       );
 
       if (response.statusCode == 200) {
-        print('Usuario actualizado exitosamente: ${jsonDecode(response.body)}');
         return true;
       } else {
-        print('Error al actualizar el usuario: ${response.reasonPhrase}');
-        print('Detalles del error: ${response.body}');
         return false;
       }
     } catch (e) {
-      print('Hubo un error: $e');
       return false;
     }
   }

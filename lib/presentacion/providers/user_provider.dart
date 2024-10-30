@@ -53,15 +53,11 @@ class UserProvider extends ChangeNotifier {
                       userData['is_active'] ?? false, // Ajusta según tu API
                 )),
           );
-        } else {
-          print('El formato de los datos recibidos no es una lista.');
         }
       } else {
         throw Exception(
             'Error al obtener los usuarios: ${response.reasonPhrase}');
       }
-    } catch (e) {
-      print('Hubo un error: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

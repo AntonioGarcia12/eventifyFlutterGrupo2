@@ -18,34 +18,56 @@ class _EditarScreenState extends ConsumerState<EditarScreen> {
 
   String _nombre = '';
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _editarServices = EditarServices(ref);
     _cargarUsuario();
   }
 
-  void _cargarUsuario() {
-    final usuario = _editarServices.cargarUsuario(widget.userId);
+  Future<void> _cargarUsuario() async {
+    final usuario = await _editarServices.cargarUsuario(widget.userId);
     setState(() {
-      _nombre = usuario['nombre']!;
+      _nombre = usuario['nombre'] ?? '';
     });
   }
 
   Future<void> _guardarCambios() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      try {
+        final success = await _editarServices.guardarCambios(
+          userId: widget.userId,
+          nombre: _nombre,
+        );
 
-      final success = await _editarServices.guardarCambios(
-        userId: widget.userId,
-        nombre: _nombre,
-      );
-
-      if (success && mounted) {
-        _mostrarConfirmacionDialog();
+        if (success && mounted) {
+          _mostrarConfirmacionDialog();
+        }
+      } catch (e) {
+        _mostrarErrorDialog(
+            'No se pudo guardar el usuario. Inténtalo de nuevo.');
       }
-    } else {
-      print('Error: Validación fallida');
     }
+  }
+
+  void _mostrarErrorDialog(String mensaje) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(mensaje),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _mostrarConfirmacionDialog() {
