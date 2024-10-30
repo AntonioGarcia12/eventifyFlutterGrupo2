@@ -82,41 +82,78 @@ class LoginServiceState extends State<LoginService> {
             context.go('/normal');
           }
         } else {
-          setState(() {
-            _generalError = 'Error: Información de usuario incompleta';
-          });
+          _showOverlayMessage('Error: Información de usuario incompleta');
         }
-      } else if (response.statusCode == 401) {
-        // Manejo específico del error Unauthorized
-        setState(() {
-          _generalError = 'La contraseña o el gmail son incorrectos';
-        });
       } else {
-        String errorMessage = responseData.containsKey('message')
-            ? responseData['message']
-            : 'Error inesperado en el inicio de sesión.';
+        // Imprimir para depuración
+        String errorMessage = 'Error inesperado en el inicio de sesión.';
 
-        if (responseData.containsKey('errors')) {
-          if (responseData['errors'].containsKey('email')) {
-            setState(() {
-              _emailError = responseData['errors']['email'][0];
-            });
-          } else if (responseData['errors'].containsKey('password')) {
-            setState(() {
-              _passwordError = responseData['errors']['password'][0];
-            });
+        // Verificar si 'data' y 'error' están en responseData
+        if (responseData.containsKey('data') &&
+            responseData['data'].containsKey('error')) {
+          String serverError = responseData['data']['error'];
+
+          // Mapear el mensaje de error del servidor a mensajes amigables
+          if (serverError == 'Unauthorized') {
+            errorMessage =
+                'El correo electrónico o la contraseña son incorrectos';
+          } else if (serverError == "Email don't confirmed") {
+            errorMessage =
+                'Email no confirmado, revisa tu correo para confirmar';
+          } else if (serverError == "User don't activated") {
+            errorMessage =
+                'Cuenta no activada, espera a que el administrador la active';
+          } else if (serverError == 'User deleted') {
+            errorMessage = 'Esta cuenta ha sido eliminada por el administrador';
+          } else {
+            // Si el mensaje no coincide, mostrar el mensaje del servidor
+            errorMessage = serverError;
           }
         } else {
-          setState(() {
-            _generalError = errorMessage;
-          });
+          // Si no hay 'data.error', usar 'message' o un mensaje genérico
+          if (responseData.containsKey('message')) {
+            errorMessage = responseData['message'];
+          }
         }
+
+        _showOverlayMessage(errorMessage);
       }
     } catch (e) {
-      setState(() {
-        _generalError = 'Hubo un error, intenta de nuevo más tarde';
-      });
+      _showOverlayMessage('Hubo un error, intenta de nuevo más tarde');
     }
+  }
+
+  void _showOverlayMessage(String message) {
+    final overlay = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).size.height * 0.1,
+        left: MediaQuery.of(context).size.width * 0.1,
+        right: MediaQuery.of(context).size.width * 0.1,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Text(
+              message,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
   }
 
   @override
@@ -183,11 +220,6 @@ class LoginServiceState extends State<LoginService> {
               style: TextStyle(color: Colors.white)),
         ),
         const SizedBox(height: 16),
-        if (_generalError != null)
-          Text(
-            _generalError!,
-            style: TextStyle(color: Colors.redAccent),
-          ),
         TextButton(
           onPressed: () {
             Navigator.push(

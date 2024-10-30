@@ -11,16 +11,17 @@ class DesactivarServices {
     final bool? confirmDeactivate = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Confirmar Desactivación'),
-        content: Text('¿Estás seguro de que deseas desactivar este usuario?'),
+        title: const Text('Confirmar Desactivación'),
+        content:
+            const Text('¿Estás seguro de que deseas desactivar este usuario?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('Cancelar'),
+            child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Desactivar'),
+            child: const Text('Desactivar'),
           ),
         ],
       ),
@@ -35,9 +36,18 @@ class DesactivarServices {
       String? token = prefs.getString('token');
 
       if (token == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('No se pudo obtener el token de autenticación')),
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: const Text('No se pudo obtener el token de autenticación'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Aceptar'),
+              ),
+            ],
+          ),
         );
         return;
       }
@@ -47,32 +57,62 @@ class DesactivarServices {
       final response = await http.post(
         url,
         headers: {
-          'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
+          'Content-Type':
+              'application/json', // Asegurarse de que el tipo de contenido sea JSON
         },
-        body: jsonEncode({'id': userId}),
+        body: jsonEncode({
+          'id': userId,
+        }),
       );
 
       if (response.statusCode == 200) {
         // Actualizar el estado del usuario en el proveedor
         ref.read(userProvider).actualizarEstadoUsuario(userId, false);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Usuario desactivado correctamente.')),
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Exito'),
+            content: const Text('Usuario desactivado correctamente.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Aceptar'),
+              ),
+            ],
+          ),
         );
       } else {
-        print('Error: ${response.statusCode}, Cuerpo: ${response.body}');
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Error al desactivar el usuario: ${response.reasonPhrase}, ${response.body}')),
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: Text(
+                'Error al desactivar el usuario: ${response.reasonPhrase}, ${response.body}'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Aceptar'),
+              ),
+            ],
+          ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hubo un error: $e')),
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text('Hubo un error: $e'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Aceptar'),
+            ),
+          ],
+        ),
       );
     }
   }
