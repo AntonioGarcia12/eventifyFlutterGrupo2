@@ -28,3 +28,5 @@ Cuenta de usuario normal:
 Cuenta de Administrador:
 -Correo electrónico: raul.reyesman@gmail.com
 -Contraseña: 123123123
+
+Enlace trello: https://trello.com/invite/b/671632e830934db2a900b279/ATTI819965c367526895add4fc1e6646232eDAC58744/grupo2moviles
