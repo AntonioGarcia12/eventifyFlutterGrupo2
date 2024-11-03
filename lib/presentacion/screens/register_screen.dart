@@ -1,10 +1,12 @@
 import 'package:eventify/presentacion/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
+  static const String name = 'registrar';
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
@@ -57,7 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      context.push('/');
                     },
                     child: const Text(
                       '¿Ya tienes una cuenta? Inicia sesión',

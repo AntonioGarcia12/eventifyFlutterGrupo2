@@ -1,4 +1,6 @@
+import 'package:eventify/config/theme/router/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -91,8 +93,7 @@ class RegisterServiceFormState extends State<RegistrarService> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
+                    context.push('/');
                   },
                   child: const Text('Aceptar'),
                 ),
