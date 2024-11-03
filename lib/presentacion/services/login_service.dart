@@ -1,4 +1,3 @@
-import 'package:eventify/presentacion/screens/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -219,10 +218,7 @@ class LoginServiceState extends State<LoginService> {
         const SizedBox(height: 16),
         TextButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const RegisterScreen()),
-            );
+            context.push('/registrar');
           },
           child: const Text(
             'Registrar nueva cuenta',

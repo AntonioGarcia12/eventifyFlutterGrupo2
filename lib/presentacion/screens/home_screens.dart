@@ -2,9 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
   static const String name = "homeScreen";
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool showWelcomeText = false;
+  bool showLoginButton = false;
+  bool showRegisterButton = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _showElementsWithDelay();
+  }
+
+  void _showElementsWithDelay() async {
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      showWelcomeText = true;
+    });
+
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      showLoginButton = true;
+    });
+
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      showRegisterButton = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,59 +79,71 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Bienvenido a Eventify',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                AnimatedOpacity(
+                  opacity: showWelcomeText ? 1.0 : 0.0,
+                  duration: const Duration(seconds: 1),
+                  child: const Text(
+                    'Bienvenido a Eventify',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 15,
+                AnimatedOpacity(
+                  opacity: showLoginButton ? 1.0 : 0.0,
+                  duration: const Duration(seconds: 1),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 15,
+                      ),
+                      backgroundColor: Colors.pinkAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
-                    backgroundColor: Colors.pinkAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  onPressed: () {
-                    context.go("/");
-                  },
-                  child: const Text(
-                    'Iniciar sesión',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    onPressed: () {
+                      context.go('/');
+                    },
+                    child: const Text(
+                      'Iniciar sesión',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 15,
+                AnimatedOpacity(
+                  opacity: showRegisterButton ? 1.0 : 0.0,
+                  duration: const Duration(seconds: 1),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 15,
+                      ),
+                      backgroundColor: Colors.pinkAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
-                    backgroundColor: Colors.pinkAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  onPressed: () {
-                    context.go("/registrar");
-                  },
-                  child: const Text(
-                    'Registrarse',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    onPressed: () {
+                      context.go('/registrar');
+                    },
+                    child: const Text(
+                      'Registrarse',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
