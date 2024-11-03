@@ -1,4 +1,3 @@
-import 'package:eventify/presentacion/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -28,7 +27,7 @@ class ActivarServices {
     );
 
     if (confirmActivate != true) {
-      return; // El usuario canceló la activación
+      return;
     }
 
     try {
@@ -58,8 +57,7 @@ class ActivarServices {
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
-          'Content-Type':
-              'application/json', // Asegurarse de que el tipo de contenido sea JSON
+          'Content-Type': 'application/json',
         },
         body: jsonEncode({
           'id': userId,
@@ -67,13 +65,10 @@ class ActivarServices {
       );
 
       if (response.statusCode == 200) {
-        // Actualizar el estado del usuario en el proveedor
-        ref.read(userProvider).actualizarEstadoUsuario(userId, true);
-
         await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Exito'),
+            title: const Text('Éxito'),
             content: const Text('Usuario activado correctamente.'),
             actions: [
               TextButton(

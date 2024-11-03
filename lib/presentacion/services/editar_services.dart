@@ -9,7 +9,6 @@ class EditarServices {
 
   EditarServices(this.ref);
 
-  // Método para cargar el usuario
   Map<String, String> cargarUsuario(int userId) {
     final usuario =
         ref.read(userProvider).usuarios.firstWhere((u) => u.id == userId);
@@ -17,11 +16,10 @@ class EditarServices {
     return {
       'nombre': usuario.name,
       'correo': usuario.email,
-      'rol': usuario.isActive ? 'organizador' : 'normal',
+      'rol': 'normal',
     };
   }
 
-  // Método para guardar los cambios
   Future<bool> guardarCambios({
     required int userId,
     required String nombre,
@@ -37,7 +35,6 @@ class EditarServices {
       final url =
           Uri.parse('https://eventify.allsites.es/public/api/updateUser');
 
-      // Solo enviar el nombre en el body
       Map<String, String> body = {
         'id': userId.toString(),
         'name': nombre,

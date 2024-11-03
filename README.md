@@ -14,3 +14,17 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+Trabajo realizado por: Pablo Pérez Hidalgo y Antonio José García Harto.
+
+Cuenta de usuario organizador:
+-Correo electrónico: perez.hipab21@cadiz.salesianos.edu
+-Contraseña: 1234
+
+Cuenta de usuario normal:
+-Correo electrónico: cuentasenderdam@gmail.com
+-Contraseña: Hola123
+
+Cuenta de Administrador:
+-Correo electrónico: raul.reyesman@gmail.com
+-Contraseña: 123123123

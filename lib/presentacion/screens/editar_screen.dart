@@ -1,6 +1,6 @@
+import 'package:eventify/presentacion/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eventify/presentacion/services/editar_services.dart';
 import 'package:go_router/go_router.dart';
 
 class EditarScreen extends ConsumerStatefulWidget {
@@ -25,7 +25,7 @@ class _EditarScreenState extends ConsumerState<EditarScreen> {
   }
 
   Future<void> _cargarUsuario() async {
-    final usuario = await _editarServices.cargarUsuario(widget.userId);
+    final usuario = _editarServices.cargarUsuario(widget.userId);
     setState(() {
       _nombre = usuario['nombre'] ?? '';
     });
@@ -80,8 +80,8 @@ class _EditarScreenState extends ConsumerState<EditarScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Cerrar el diálogo
-                context.go('/admin'); // Redirigir a AdministradorScreen
+                Navigator.pop(context);
+                context.go('/admin');
               },
               child: const Text('Aceptar'),
             ),
@@ -97,7 +97,6 @@ class _EditarScreenState extends ConsumerState<EditarScreen> {
       backgroundColor: Colors.black87,
       body: Stack(
         children: [
-          // Fondo animado similar al de LoginScreen
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -115,7 +114,6 @@ class _EditarScreenState extends ConsumerState<EditarScreen> {
           ),
           Column(
             children: [
-              // AppBar personalizado con degradado
               Container(
                 padding:
                     const EdgeInsets.only(top: 40.0, left: 16.0, right: 16.0),
@@ -157,7 +155,7 @@ class _EditarScreenState extends ConsumerState<EditarScreen> {
                     child: ListView(
                       children: [
                         const Text(
-                          'Nombre', // Aquí está el label
+                          'Nombre',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16.0,
@@ -167,7 +165,7 @@ class _EditarScreenState extends ConsumerState<EditarScreen> {
                         const SizedBox(height: 8.0),
                         TextFormField(
                           initialValue: _nombre,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             hintText: 'Nombre',
                             hintStyle:
@@ -176,7 +174,7 @@ class _EditarScreenState extends ConsumerState<EditarScreen> {
                             fillColor: Colors.white.withOpacity(0.3),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(color: Colors.white),
+                              borderSide: const BorderSide(color: Colors.white),
                             ),
                           ),
                           onSaved: (value) {

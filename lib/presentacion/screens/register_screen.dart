@@ -1,4 +1,4 @@
-import 'package:eventify/presentacion/services/registrar_service.dart';
+import 'package:eventify/presentacion/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -50,8 +50,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(height: 32),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 32.0),
                     child: RegistrarService(),
                   ),
                   const SizedBox(height: 16),

@@ -1,7 +1,5 @@
 import 'package:eventify/presentacion/providers/user_provider.dart';
-import 'package:eventify/presentacion/services/activar_services.dart';
-import 'package:eventify/presentacion/services/desactivar_services.dart';
-import 'package:eventify/presentacion/services/eliminar_services.dart';
+import 'package:eventify/presentacion/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,7 +19,6 @@ class _AdministradorScreenState extends ConsumerState<AdministradorScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch usuarios from provider after the widget is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(userProvider).fetchUsuarios();
     });
@@ -57,7 +54,6 @@ class _AdministradorScreenState extends ConsumerState<AdministradorScreen> {
       backgroundColor: Colors.black87,
       body: Stack(
         children: [
-          // Fondo animado similar al de LoginScreen
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -77,7 +73,6 @@ class _AdministradorScreenState extends ConsumerState<AdministradorScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // AppBar personalizado con degradado
               Container(
                 padding:
                     const EdgeInsets.only(top: 40.0, left: 16.0, right: 16.0),

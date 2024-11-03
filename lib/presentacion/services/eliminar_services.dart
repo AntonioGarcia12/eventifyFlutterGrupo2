@@ -29,7 +29,7 @@ class EliminarServices {
     );
 
     if (confirmDelete != true) {
-      return; // El usuario canceló la eliminación
+      return;
     }
 
     try {
@@ -57,7 +57,6 @@ class EliminarServices {
       );
 
       if (response.statusCode == 200) {
-        // Actualizar el estado del usuario en el proveedor
         ref.read(userProvider).eliminarUsuario(userId);
 
         ScaffoldMessenger.of(context).showSnackBar(

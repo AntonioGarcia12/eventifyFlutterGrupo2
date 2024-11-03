@@ -1,4 +1,3 @@
-import 'package:eventify/presentacion/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -28,7 +27,7 @@ class DesactivarServices {
     );
 
     if (confirmDeactivate != true) {
-      return; // El usuario canceló la desactivación
+      return;
     }
 
     try {
@@ -68,9 +67,6 @@ class DesactivarServices {
       );
 
       if (response.statusCode == 200) {
-        // Actualizar el estado del usuario en el proveedor
-        ref.read(userProvider).actualizarEstadoUsuario(userId, false);
-
         await showDialog(
           context: context,
           builder: (context) => AlertDialog(

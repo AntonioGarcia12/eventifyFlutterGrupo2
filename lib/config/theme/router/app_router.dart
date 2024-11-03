@@ -1,9 +1,5 @@
-import 'package:eventify/presentacion/screens/administrador_screen.dart';
-import 'package:eventify/presentacion/screens/editar_screen.dart';
-import 'package:eventify/presentacion/screens/login_screen.dart';
-import 'package:eventify/presentacion/screens/normal_screen.dart';
-import 'package:eventify/presentacion/screens/organizador_screen.dart';
-import 'package:eventify/presentacion/services/login_service.dart';
+import 'package:eventify/presentacion/screens/screens.dart';
+import 'package:eventify/presentacion/services/services.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(initialLocation: '/', routes: [

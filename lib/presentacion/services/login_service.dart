@@ -1,4 +1,4 @@
-import 'package:eventify/presentacion/screens/register_screen.dart';
+import 'package:eventify/presentacion/screens/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -21,7 +21,6 @@ class LoginServiceState extends State<LoginService> {
 
   String? _emailError;
   String? _passwordError;
-  String? _generalError;
 
   Future<void> _loginUser() async {
     String email = _emailController.text.trim();
@@ -30,10 +29,8 @@ class LoginServiceState extends State<LoginService> {
     setState(() {
       _emailError = null;
       _passwordError = null;
-      _generalError = null;
     });
 
-    // Validar si los campos están vacíos
     if (email.isEmpty) {
       setState(() {
         _emailError = 'El correo es obligatorio';
@@ -73,7 +70,6 @@ class LoginServiceState extends State<LoginService> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', token);
 
-          // Navegar según el rol
           if (role == 'a') {
             context.go('/admin');
           } else if (role == 'o') {
@@ -85,15 +81,12 @@ class LoginServiceState extends State<LoginService> {
           _showOverlayMessage('Error: Información de usuario incompleta');
         }
       } else {
-        // Imprimir para depuración
         String errorMessage = 'Error inesperado en el inicio de sesión.';
 
-        // Verificar si 'data' y 'error' están en responseData
         if (responseData.containsKey('data') &&
             responseData['data'].containsKey('error')) {
           String serverError = responseData['data']['error'];
 
-          // Mapear el mensaje de error del servidor a mensajes amigables
           if (serverError == 'Unauthorized') {
             errorMessage =
                 'El correo electrónico o la contraseña son incorrectos';
@@ -106,11 +99,9 @@ class LoginServiceState extends State<LoginService> {
           } else if (serverError == 'User deleted') {
             errorMessage = 'Esta cuenta ha sido eliminada por el administrador';
           } else {
-            // Si el mensaje no coincide, mostrar el mensaje del servidor
             errorMessage = serverError;
           }
         } else {
-          // Si no hay 'data.error', usar 'message' o un mensaje genérico
           if (responseData.containsKey('message')) {
             errorMessage = responseData['message'];
           }
@@ -164,7 +155,7 @@ class LoginServiceState extends State<LoginService> {
         TextField(
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: 'Correo electrónico',
             hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
@@ -172,16 +163,19 @@ class LoginServiceState extends State<LoginService> {
             fillColor: Colors.white.withOpacity(0.3),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: Colors.white),
+              borderSide: const BorderSide(color: Colors.white),
             ),
             errorText: _emailError,
+            errorStyle: const TextStyle(
+              color: Colors.redAccent,
+            ),
           ),
         ),
         const SizedBox(height: 16),
         TextField(
           controller: _passwordController,
           obscureText: !_passwordVisible,
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: 'Contraseña',
             hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
@@ -189,7 +183,7 @@ class LoginServiceState extends State<LoginService> {
             fillColor: Colors.white.withOpacity(0.3),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: Colors.white),
+              borderSide: const BorderSide(color: Colors.white),
             ),
             suffixIcon: IconButton(
               icon: Icon(
@@ -203,6 +197,9 @@ class LoginServiceState extends State<LoginService> {
               },
             ),
             errorText: _passwordError,
+            errorStyle: const TextStyle(
+              color: Colors.redAccent,
+            ),
           ),
         ),
         const SizedBox(height: 20),
@@ -224,7 +221,7 @@ class LoginServiceState extends State<LoginService> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => RegisterScreen()),
+              MaterialPageRoute(builder: (context) => const RegisterScreen()),
             );
           },
           child: const Text(

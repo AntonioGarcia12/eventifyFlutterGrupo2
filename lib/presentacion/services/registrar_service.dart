@@ -18,7 +18,6 @@ class RegisterServiceFormState extends State<RegistrarService> {
   String userType = 'u';
   bool _passwordVisible = false;
 
-  // Variables para almacenar mensajes de error
   String? _nameError;
   String? _emailError;
   String? _passwordError;
@@ -31,12 +30,17 @@ class RegisterServiceFormState extends State<RegistrarService> {
     String password = _passwordController.text.trim();
     String confirmPassword = _confirmPasswordController.text.trim();
 
+    final passwordPattern = RegExp(r'^(?=.*[A-Z])(?=.*\d).+$');
+
     setState(() {
-      // Validación local de los campos y actualización de mensajes de error
       _nameError = name.isEmpty ? 'El nombre es obligatorio' : null;
       _emailError =
           email.isEmpty ? 'El correo electrónico es obligatorio' : null;
-      _passwordError = password.isEmpty ? 'La contraseña es obligatoria' : null;
+      _passwordError = password.isEmpty
+          ? 'La contraseña es obligatoria'
+          : (!passwordPattern.hasMatch(password)
+              ? 'La contraseña debe contener al menos un número y una letra mayúscula'
+              : null);
       _confirmPasswordError = confirmPassword.isEmpty
           ? 'Confirmar la contraseña es obligatorio'
           : null;
@@ -50,7 +54,6 @@ class RegisterServiceFormState extends State<RegistrarService> {
       }
     });
 
-    // Si hay algún error, no continuar con el registro
     if (_nameError != null ||
         _emailError != null ||
         _passwordError != null ||
@@ -76,10 +79,8 @@ class RegisterServiceFormState extends State<RegistrarService> {
         }),
       );
 
-      // Parsear la respuesta
       final responseData = jsonDecode(response.body);
 
-      // Manejar la respuesta en función del código de estado
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (responseData['success'] == true) {
           showDialog(
@@ -103,12 +104,10 @@ class RegisterServiceFormState extends State<RegistrarService> {
           _showErrorDialog('Error', errorMessage);
         }
       } else if (response.statusCode == 400) {
-        // El servidor devuelve un 400 para errores de validación
         String errorMessage = responseData.containsKey('message')
             ? responseData['message']
             : 'Error desconocido';
 
-        // Revisar si hay errores detallados
         if (responseData.containsKey('data')) {
           Map<String, dynamic> errors = responseData['data'];
           List<String> errorMessages = [];
@@ -158,6 +157,9 @@ class RegisterServiceFormState extends State<RegistrarService> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             errorText: _nameError,
+            errorStyle: const TextStyle(
+              color: Colors.redAccent,
+            ),
           ),
           style: const TextStyle(color: Colors.white),
         ),
@@ -172,6 +174,9 @@ class RegisterServiceFormState extends State<RegistrarService> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             errorText: _emailError,
+            errorStyle: const TextStyle(
+              color: Colors.redAccent,
+            ),
           ),
           style: const TextStyle(color: Colors.white),
         ),
@@ -197,6 +202,10 @@ class RegisterServiceFormState extends State<RegistrarService> {
               },
             ),
             errorText: _passwordError,
+            errorStyle: const TextStyle(
+              color: Colors.redAccent,
+              fontSize: 8.0,
+            ),
           ),
           style: const TextStyle(color: Colors.white),
         ),
@@ -211,6 +220,9 @@ class RegisterServiceFormState extends State<RegistrarService> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             errorText: _confirmPasswordError,
+            errorStyle: const TextStyle(
+              color: Colors.redAccent,
+            ),
           ),
           style: const TextStyle(color: Colors.white),
         ),
@@ -246,6 +258,9 @@ class RegisterServiceFormState extends State<RegistrarService> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             errorText: _userTypeError,
+            errorStyle: const TextStyle(
+              color: Colors.redAccent,
+            ),
           ),
         ),
         const SizedBox(height: 24),
