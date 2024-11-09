@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       backgroundColor: Colors.pinkAccent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(40),
                       ),
                     ),
                     onPressed: () {
@@ -126,12 +126,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
+                        horizontal: 45,
                         vertical: 15,
                       ),
                       backgroundColor: Colors.pinkAccent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(40),
                       ),
                     ),
                     onPressed: () {
