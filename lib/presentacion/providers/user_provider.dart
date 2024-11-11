@@ -41,12 +41,17 @@ class UserProvider extends ChangeNotifier {
         final responseData = jsonDecode(response.body);
 
         if (responseData['data'] is List) {
+          // Filtrar solo usuarios con `email_verified_at` distinto de `null`
           _usuarios = List<Usuario>.from(
-            responseData['data'].map((userData) => Usuario(
-                  id: userData['id'],
-                  name: userData['name'] ?? 'Sin nombre',
-                  email: userData['email'] ?? 'Sin correo electrónico',
-                )),
+            responseData['data']
+                .where((userData) => userData['email_verified_at'] != null)
+                .map(
+                  (userData) => Usuario(
+                    id: userData['id'],
+                    name: userData['name'] ?? 'Sin nombre',
+                    email: userData['email'] ?? 'Sin correo electrónico',
+                  ),
+                ),
           );
         }
       } else {

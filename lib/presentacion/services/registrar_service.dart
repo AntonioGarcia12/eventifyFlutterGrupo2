@@ -118,6 +118,9 @@ class RegisterServiceFormState extends State<RegistrarService> {
         }
 
         _showErrorDialog('Error', errorMessage);
+      } else if (response.statusCode == 500 &&
+          responseData['message'].contains('Duplicate entry')) {
+        _showErrorDialog('Error', 'El correo electrónico ya existe.');
       } else {
         _showErrorDialog('Error',
             'Error: ${response.statusCode} - ${responseData['message']}');
