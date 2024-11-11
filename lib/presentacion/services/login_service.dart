@@ -65,9 +65,13 @@ class LoginServiceState extends State<LoginService> {
             responseData['data']['role'] != null) {
           String role = responseData['data']['role'];
           String token = responseData['data']['token'];
+          String username =
+              responseData['data']['name']; // Obtener el nombre de usuario
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', token);
+          await prefs.setString(
+              'username', username); // Guardar el nombre de usuario
 
           if (role == 'a') {
             context.go('/admin');
