@@ -43,7 +43,7 @@ class EventoProvider extends ChangeNotifier {
         if (responseData['data'] is List) {
           _eventos = List<Evento>.from(
             responseData['data'].map((eventData) => Evento(
-                  tittle: eventData['title'] ?? 'Sin título',
+                  title: eventData['title'] ?? 'Sin título',
                   star_time: eventData['start_time'] ?? 'Sin hora de inicio',
                   image_url: eventData['image_url'] ?? '',
                   category: eventData['category'] ?? 'Sin categoría',
@@ -54,7 +54,7 @@ class EventoProvider extends ChangeNotifier {
         print('$responseData');
       } else {
         throw Exception(
-            'Error al obtener los eventos: ${response.reasonPhrase}');
+            'Error al obtener los eventos: ${response.reasonPhrase} (${response.statusCode})');
       }
     } finally {
       _isLoading = false;
