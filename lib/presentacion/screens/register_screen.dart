@@ -18,7 +18,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: Colors.black87,
       body: Stack(
         children: [
-          // Fondo animado
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(

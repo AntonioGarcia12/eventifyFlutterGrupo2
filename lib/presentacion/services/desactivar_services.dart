@@ -58,8 +58,7 @@ class DesactivarServices {
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
-          'Content-Type':
-              'application/json', // Asegurarse de que el tipo de contenido sea JSON
+          'Content-Type': 'application/json',
         },
         body: jsonEncode({
           'id': userId,
