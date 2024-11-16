@@ -39,7 +39,6 @@ class EventoProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        print('$response.body');
         if (responseData['data'] is List) {
           _eventos = List<Evento>.from(
             responseData['data'].map((eventData) => Evento(
@@ -51,7 +50,6 @@ class EventoProvider extends ChangeNotifier {
           );
         }
 
-        print('$responseData');
       } else {
         throw Exception(
             'Error al obtener los eventos: ${response.reasonPhrase} (${response.statusCode})');
