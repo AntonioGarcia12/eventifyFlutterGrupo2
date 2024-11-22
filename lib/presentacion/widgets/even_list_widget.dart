@@ -6,8 +6,14 @@ import 'package:eventify/presentacion/widgets/widgets.dart';
 class EventList extends StatelessWidget {
   final bool isLoading;
   final List<Evento> eventos;
+  final bool isMyEvent;
 
-  const EventList({required this.isLoading, required this.eventos, super.key});
+  const EventList({
+    required this.isLoading,
+    required this.eventos,
+    this.isMyEvent = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +54,11 @@ class EventList extends StatelessWidget {
       default:
         borderColor = Colors.grey;
     }
-    return GenericEventCard(evento: evento, borderColor: borderColor);
+
+    return GenericEventCard(
+      evento: evento,
+      borderColor: borderColor,
+      isMyEvent: isMyEvent,
+    );
   }
 }

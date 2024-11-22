@@ -21,6 +21,12 @@ class LoginServiceState extends State<LoginService> {
   String? _emailError;
   String? _passwordError;
 
+  void saveEmail(String email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+        'userEmail', email); // Guarda el email en SharedPreferences
+  }
+
   Future<void> _loginUser() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
@@ -66,6 +72,9 @@ class LoginServiceState extends State<LoginService> {
           String role = responseData['data']['role'];
           String token = responseData['data']['token'];
           String username = responseData['data']['name'];
+
+          // Guarda el email y otros datos en SharedPreferences
+          saveEmail(email);
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', token);
