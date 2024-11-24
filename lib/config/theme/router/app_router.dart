@@ -31,7 +31,7 @@ final appRouter = GoRouter(initialLocation: '/home', routes: [
   GoRoute(
     path: '/normal',
     name: NormalScreen.name,
-    builder: (context, state) => const NormalScreen(),
+    builder: (context, state) => const NormalScreen(isMyEvent: false),
   ),
   GoRoute(
     path: '/organizador',
@@ -42,5 +42,15 @@ final appRouter = GoRouter(initialLocation: '/home', routes: [
     path: '/login',
     name: LoginService.name,
     builder: (context, state) => const LoginService(),
+  ),
+  GoRoute(
+    path: '/mis-eventos',
+    name: MisEventosScreen.name,
+    builder: (context, state) => const MisEventosScreen(isMyEvent: true),
+  ),
+  GoRoute(
+    path: '/informe',
+    name: InformeScreen.name,
+    builder: (context, state) => const InformeScreen(),
   ),
 ]);
