@@ -23,8 +23,7 @@ class LoginServiceState extends State<LoginService> {
 
   void saveEmail(String email) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-        'userEmail', email); // Guarda el email en SharedPreferences
+    await prefs.setString('userEmail', email);
   }
 
   Future<void> _loginUser() async {
@@ -72,13 +71,14 @@ class LoginServiceState extends State<LoginService> {
           String role = responseData['data']['role'];
           String token = responseData['data']['token'];
           String username = responseData['data']['name'];
+          int id = responseData['data']['id'];
 
-          // Guarda el email y otros datos en SharedPreferences
           saveEmail(email);
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', token);
           await prefs.setString('username', username);
+          await prefs.setInt('id', id);
 
           if (role == 'a') {
             context.go('/admin');

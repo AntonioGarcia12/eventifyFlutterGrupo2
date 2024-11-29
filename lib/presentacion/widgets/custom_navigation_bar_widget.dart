@@ -4,8 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final int currentIndex;
-  const CustomBottomNavigationBar({Key? key, required this.currentIndex})
-      : super(key: key);
+  const CustomBottomNavigationBar({super.key, required this.currentIndex});
 
   @override
   _CustomBottomNavigationBarState createState() =>
@@ -132,7 +131,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                   label: 'Mis eventos',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.create),
+                  icon: Icon(Icons.edit_document),
                   label: 'Informe',
                 ),
                 BottomNavigationBarItem(

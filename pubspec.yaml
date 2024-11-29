@@ -61,6 +61,7 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.1
 
 # Flutter configuration
 flutter:
@@ -69,3 +70,8 @@ flutter:
   assets:
     - assets/images/
     - assets/fonts/
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo2.png"
