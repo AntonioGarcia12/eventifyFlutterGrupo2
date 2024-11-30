@@ -1,16 +1,17 @@
-import 'package:eventify/presentacion/widgets/generic_event_card_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:eventify/infraestructuras/models/evento.dart';
 import 'package:eventify/presentacion/widgets/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EventList extends StatelessWidget {
   final bool isLoading;
   final List<Evento> eventos;
   final bool isMyEvent;
+  final WidgetRef ref;
 
   const EventList({
     required this.isLoading,
     required this.eventos,
+    required this.ref,
     this.isMyEvent = false,
     super.key,
   });
@@ -59,6 +60,7 @@ class EventList extends StatelessWidget {
       evento: evento,
       borderColor: borderColor,
       isMyEvent: isMyEvent,
+      ref: ref,
     );
   }
 }

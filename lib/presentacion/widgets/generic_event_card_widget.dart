@@ -1,91 +1,49 @@
+import 'package:eventify/presentacion/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:eventify/infraestructuras/models/evento.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GenericEventCard extends StatelessWidget {
+class GenericEventCard extends StatefulWidget {
   final Evento evento;
   final Color borderColor;
   final bool isMyEvent;
+  final WidgetRef ref;
 
   const GenericEventCard({
     required this.evento,
     required this.borderColor,
     this.isMyEvent = false,
+    required this.ref,
     super.key,
   });
 
-  void _desinscribirEvento(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Te has desinscrito del evento: ${evento.title}'),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.redAccent.withOpacity(0.9),
-      ),
-    );
-  }
+  @override
+  _GenericEventCardState createState() => _GenericEventCardState();
+}
 
-  String _formatDateTime(String dateTimeString, {bool includeTime = true}) {
-    try {
-      DateTime dateTime = DateTime.parse(dateTimeString);
-      String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
-      if (includeTime) {
-        String formattedTime = DateFormat('HH:mm').format(dateTime);
-        return '$formattedDate - $formattedTime';
-      } else {
-        return formattedDate;
-      }
-    } catch (e) {
-      return 'Fecha no disponible';
-    }
-  }
+class _GenericEventCardState extends State<GenericEventCard> {
+  late BuildContext parentContext;
+  late GenericEventCardServices eventCardServices;
 
-  void _mostrarDetalles(BuildContext context) {
-    String formattedStart = _formatDateTime(evento.star_time);
-    String formattedEnd = _formatDateTime(evento.end_time);
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            evento.title,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.network(
-                evento.image_url,
-                fit: BoxFit.cover,
-              ),
-              const SizedBox(height: 10),
-              Text('Inicio: $formattedStart'),
-              Text('Finalización: $formattedEnd'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cerrar'),
-            ),
-          ],
-        );
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    parentContext = context;
+    eventCardServices =
+        GenericEventCardServices(ref: widget.ref, context: parentContext);
   }
 
   @override
   Widget build(BuildContext context) {
-    String formattedStart = _formatDateTime(evento.star_time);
-    String formattedEnd = _formatDateTime(evento.end_time);
+    String formattedStart = _formatDateTime(widget.evento.star_time);
+    String formattedEnd = _formatDateTime(widget.evento.end_time);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Card(
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: borderColor, width: 2),
+          side: BorderSide(color: widget.borderColor, width: 2),
           borderRadius: BorderRadius.circular(10),
         ),
         elevation: 6,
@@ -100,7 +58,7 @@ class GenericEventCard extends StatelessWidget {
                   left: Radius.circular(10),
                 ),
                 child: Image.network(
-                  evento.image_url,
+                  widget.evento.image_url,
                   width: 130,
                   height: double.infinity,
                   fit: BoxFit.cover,
@@ -117,7 +75,7 @@ class GenericEventCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            evento.title,
+                            widget.evento.title,
                             style: const TextStyle(
                               color: Colors.black,
                               fontSize: 16,
@@ -145,12 +103,12 @@ class GenericEventCard extends StatelessWidget {
                       ),
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: isMyEvent
+                        child: widget.isMyEvent
                             ? Row(
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () =>
-                                        _desinscribirEvento(context),
+                                    onPressed: () => eventCardServices
+                                        .confirmarDesinscripcion(widget.evento),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.redAccent,
                                       padding: const EdgeInsets.symmetric(
@@ -172,7 +130,10 @@ class GenericEventCard extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 8),
                                   ElevatedButton(
-                                    onPressed: () => _mostrarDetalles(context),
+                                    onPressed: () async {
+                                      await eventCardServices
+                                          .mostrarDetalles(widget.evento);
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blueAccent,
                                       padding: const EdgeInsets.symmetric(
@@ -194,27 +155,57 @@ class GenericEventCard extends StatelessWidget {
                                   ),
                                 ],
                               )
-                            : ElevatedButton(
-                                onPressed: () => _inscribirEvento(context),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      borderColor.withOpacity(0.85),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 6,
-                                    horizontal: 10,
+                            : Row(
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () => eventCardServices
+                                        .confirmarInscripcion(widget.evento),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          widget.borderColor.withOpacity(0.85),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 6,
+                                        horizontal: 10,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Inscribirse',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                                  const SizedBox(width: 8),
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      await eventCardServices
+                                          .mostrarDetalles(widget.evento);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blueAccent,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 6,
+                                        horizontal: 10,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Detalles',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                child: const Text(
-                                  'Inscribirse',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                                ],
                               ),
                       ),
                     ],
@@ -228,5 +219,18 @@ class GenericEventCard extends StatelessWidget {
     );
   }
 
-  _inscribirEvento(BuildContext context) {}
+  String _formatDateTime(String dateTimeString, {bool includeTime = true}) {
+    try {
+      DateTime dateTime = DateTime.parse(dateTimeString);
+      String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+      if (includeTime) {
+        String formattedTime = DateFormat('HH:mm').format(dateTime);
+        return '$formattedDate - $formattedTime';
+      } else {
+        return formattedDate;
+      }
+    } catch (e) {
+      return 'Fecha no disponible';
+    }
+  }
 }

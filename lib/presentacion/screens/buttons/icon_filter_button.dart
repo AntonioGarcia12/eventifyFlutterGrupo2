@@ -18,12 +18,12 @@ class IconFilterButton extends StatelessWidget {
       backgroundColor: color,
       onPressed: onPressed,
       shape: const CircleBorder(),
+      heroTag: icon.toString(),
       child: Icon(
         icon,
         color: Colors.white,
         size: 30,
       ),
-      heroTag: icon.toString(),
     );
   }
 }

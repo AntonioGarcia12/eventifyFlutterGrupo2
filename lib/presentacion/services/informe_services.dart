@@ -110,13 +110,11 @@ class InformeServices {
       final pdfFile = await _pdfGenerator.generatePdf(
         events: events,
         userName: userName,
-        fileName: "informe_eventos.pdf",
         appLogoPath: "assets/images/logo.png",
       );
 
       final savedPath = await _pdfGenerator.savePdfToDownloads(
         await pdfFile.readAsBytes(),
-        "informe_eventos.pdf",
       );
 
       return savedPath;
@@ -134,7 +132,6 @@ class InformeServices {
       final pdfFile = await _pdfGenerator.generatePdf(
         events: events,
         userName: userName,
-        fileName: "informe_eventos.pdf",
         appLogoPath: "assets/images/logo.png",
       );
 
