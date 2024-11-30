@@ -16,7 +16,12 @@ class EventoProvider extends ChangeNotifier {
   List<Evento> get eventos => _eventos;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchEventos() async {
+  void setEventos(List<Evento> eventos) {
+    _eventos = eventos;
+    notifyListeners();
+  }
+
+  Future<List<Evento>> fetchEventos() async {
     _isLoading = true;
     notifyListeners();
 
@@ -42,21 +47,30 @@ class EventoProvider extends ChangeNotifier {
         if (responseData['data'] is List) {
           _eventos = List<Evento>.from(
             responseData['data'].map((eventData) => Evento(
+                  id: eventData['id'],
                   title: eventData['title'] ?? 'Sin título',
                   star_time: eventData['start_time'] ?? 'Sin hora de inicio',
+                  end_time: eventData['end_time'] ?? 'Sin hora de fin',
                   image_url: eventData['image_url'] ?? '',
                   category: eventData['category'] ?? 'Sin categoría',
                 )),
           );
+          notifyListeners();
+          return _eventos;
+        } else {
+          throw Exception('Formato de datos no esperado');
         }
-
       } else {
-        throw Exception(
-            'Error al obtener los eventos: ${response.reasonPhrase} (${response.statusCode})');
+        throw Exception('Error al obtener eventos: ${response.reasonPhrase}');
       }
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void removeEvent(int eventId) {
+    _eventos.removeWhere((evento) => evento.id == eventId);
+    notifyListeners();
   }
 }

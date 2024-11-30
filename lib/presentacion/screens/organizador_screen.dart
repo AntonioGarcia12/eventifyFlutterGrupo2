@@ -133,64 +133,6 @@ class _OrganizadorScreenState extends ConsumerState<OrganizadorScreen> {
           ),
         ),
       ),
-      drawer: Drawer(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.deepPurple.shade900,
-                Colors.purple.shade700,
-                Colors.pinkAccent.shade400,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),
-                ),
-                child: const Text(
-                  'Menú',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              BuildListTile(
-                icon: Icons.create,
-                label: 'Crear evento',
-                color: Colors.purple.shade300,
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              BuildListTile(
-                icon: Icons.event,
-                label: 'Mis eventos',
-                color: Colors.pinkAccent.shade200,
-                onTap: () {
-                  Navigator.pop(context);
-                  // Acción para 'Mis eventos'
-                },
-              ),
-              BuildListTile(
-                icon: Icons.event_available_rounded,
-                label: 'Eventos activos',
-                color: Colors.deepPurple.shade400,
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
       body: Stack(
         children: [
           const BackgroundGradient(),
@@ -200,6 +142,7 @@ class _OrganizadorScreenState extends ConsumerState<OrganizadorScreen> {
                 child: EventList(
                   isLoading: eventoProviderInstance.isLoading,
                   eventos: eventosOrdenados,
+                  ref: ref,
                 ),
               ),
             ],

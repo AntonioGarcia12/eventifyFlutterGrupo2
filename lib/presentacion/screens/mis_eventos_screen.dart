@@ -1,39 +1,35 @@
-import 'package:eventify/presentacion/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:ui';
+import 'package:eventify/presentacion/widgets/widgets.dart';
 import 'package:eventify/presentacion/providers/evento_provider.dart';
 import 'package:eventify/presentacion/services/normal_service.dart';
+import 'package:eventify/presentacion/services/mis_eventos_services.dart';
 import 'package:eventify/utils/event_sort.dart';
-import 'dart:ui';
 
-class NormalScreen extends ConsumerStatefulWidget {
+final registeredEventIdsProvider = FutureProvider<List<int>>((ref) async {
+  final misEventosServices = MisEventosServices();
+  return await misEventosServices.fetchRegisteredEventIds();
+});
+
+class MisEventosScreen extends ConsumerStatefulWidget {
   final bool isMyEvent;
-  const NormalScreen({super.key, this.isMyEvent = false});
-  static const String name = 'normal_screen';
+  const MisEventosScreen({this.isMyEvent = true, super.key});
+  static const String name = 'MisEventosScreen';
 
   @override
-  _NormalScreenState createState() => _NormalScreenState();
+  _MisEventosScreenState createState() => _MisEventosScreenState();
 }
 
-class _NormalScreenState extends ConsumerState<NormalScreen> {
+class _MisEventosScreenState extends ConsumerState<MisEventosScreen> {
   bool showFilterButtons = false;
   String selectedCategory = '';
-  late NormalService normalService;
-  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    normalService = ref.read(normalServiceProvider);
-    normalService.loadUsername();
-    Future.microtask(() async {
-      try {
-        final fetchedEventos = await normalService.fetchEventosNoRegistrados();
-        ref.read(eventoProvider).setEventos(fetchedEventos);
-      } finally {
-        setState(() {
-          isLoading = false;
-        });
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(eventoProvider.notifier).fetchEventos();
+      ref.read(normalServiceProvider).loadUsername();
     });
   }
 
@@ -62,12 +58,7 @@ class _NormalScreenState extends ConsumerState<NormalScreen> {
     final eventoProviderInstance = ref.watch(eventoProvider);
     final eventos = eventoProviderInstance.eventos;
 
-    final eventosFiltrados = normalService.filterEventosByCategory(
-      eventos,
-      selectedCategory,
-    );
-    final eventosFuturos = EventSorter.filterFutureEvents(eventosFiltrados);
-    final eventosOrdenados = EventSorter.sortEventsByDateAsc(eventosFuturos);
+    final registeredEventIdsAsync = ref.watch(registeredEventIdsProvider);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -95,7 +86,7 @@ class _NormalScreenState extends ConsumerState<NormalScreen> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               title: const Text(
-                'Eventify',
+                'Mis Eventos',
                 style: TextStyle(
                   fontSize: 24,
                   color: Colors.white,
@@ -108,18 +99,56 @@ class _NormalScreenState extends ConsumerState<NormalScreen> {
       body: Stack(
         children: [
           const BackgroundGradient(),
-          Column(
-            children: [
-              Expanded(
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : EventList(
-                        isLoading: false,
-                        eventos: eventosOrdenados,
-                        ref: ref,
-                      ),
-              ),
-            ],
+          registeredEventIdsAsync.when(
+            data: (registeredEventIds) {
+              if (eventos.isEmpty) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              final eventosRegistrados = eventos
+                  .where((evento) => registeredEventIds.contains(evento.id))
+                  .toList();
+
+              if (eventosRegistrados.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No estás registrado en ningún evento.',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                );
+              }
+
+              final eventosFiltrados =
+                  ref.read(normalServiceProvider).filterEventosByCategory(
+                        eventosRegistrados,
+                        selectedCategory,
+                      );
+              final eventosFuturos =
+                  EventSorter.filterFutureEvents(eventosFiltrados);
+              final eventosOrdenados =
+                  EventSorter.sortEventsByDateAsc(eventosFuturos);
+
+              return Column(
+                children: [
+                  Expanded(
+                    child: EventList(
+                      isLoading: false,
+                      eventos: eventosOrdenados,
+                      ref: ref,
+                      isMyEvent: true,
+                    ),
+                  ),
+                ],
+              );
+            },
+            loading: () {
+              return const Center(child: CircularProgressIndicator());
+            },
+            error: (error, stack) {
+              return Center(child: Text('Error: $error'));
+            },
           ),
           if (showFilterButtons)
             Positioned.fill(
@@ -181,7 +210,7 @@ class _NormalScreenState extends ConsumerState<NormalScreen> {
         ],
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(
-        currentIndex: 0,
+        currentIndex: 1,
       ),
     );
   }
