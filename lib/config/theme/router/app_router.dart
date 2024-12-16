@@ -53,4 +53,21 @@ final appRouter = GoRouter(initialLocation: '/home', routes: [
     name: InformeScreen.name,
     builder: (context, state) => const InformeScreen(),
   ),
+  GoRoute(
+    path: '/crearEvento',
+    name: CrearEventoScreen.name,
+    builder: (context, state) => const CrearEventoScreen(),
+  ),
+  GoRoute(
+    path: '/graficas',
+    name: GraficaOrganizadorScreen.name,
+    builder: (context, state) => const GraficaOrganizadorScreen(),
+  ),
+  GoRoute(
+    path: '/editar_eventos',
+    builder: (context, state) {
+      final eventId = state.extra as int;
+      return EditarEventosScreen(eventId: eventId);
+    },
+  ),
 ]);

@@ -1,10 +1,11 @@
+import 'package:eventify/presentacion/widgets/custom_navigation_bar_organizador_widget.dart';
+import 'package:eventify/presentacion/services/organizador_service.dart';
+import 'package:eventify/presentacion/widgets/event_list_organizador_widget.dart';
+import 'package:eventify/presentacion/widgets/widgets.dart';
+import 'package:eventify/presentacion/providers/evento_by_organizador_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eventify/presentacion/providers/evento_provider.dart';
-import 'package:eventify/presentacion/services/organizador_service.dart';
-import 'package:eventify/utils/event_sort.dart';
-import 'package:eventify/presentacion/widgets/widgets.dart';
-import 'dart:ui';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrganizadorScreen extends ConsumerStatefulWidget {
   const OrganizadorScreen({super.key});
@@ -15,86 +16,36 @@ class OrganizadorScreen extends ConsumerStatefulWidget {
 }
 
 class _OrganizadorScreenState extends ConsumerState<OrganizadorScreen> {
-  bool showFilterButtons = false;
   String selectedCategory = '';
   late OrganizadorService organizadorService;
 
   @override
   void initState() {
     super.initState();
-    organizadorService = ref.read(organizadorServiceProvider);
-    organizadorService.loadUsername();
-    Future.microtask(() {
-      organizadorService.fetchEventos();
-    });
+    _initializeEvents();
   }
 
-  void _toggleFilterButtons() {
-    setState(() {
-      showFilterButtons = !showFilterButtons;
-    });
-  }
+  Future<void> _initializeEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    final organizerId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? '';
 
-  void _filterByCategory(String category) {
-    setState(() {
-      selectedCategory = category;
-      showFilterButtons = false;
-    });
-  }
-
-  void _resetFilters() {
-    setState(() {
-      selectedCategory = '';
-      showFilterButtons = false;
-    });
-  }
-
-  void _showProfileDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.deepPurple.shade800,
-          title: const Text(
-            'Usuario',
-            style: TextStyle(color: Colors.white),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                organizadorService.username,
-                style: const TextStyle(color: Colors.white70),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.go('/');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                ),
-                child: const Text('Cerrar sesión'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+    if (organizerId > 0 && token.isNotEmpty) {
+      await ref
+          .read(eventoByOrganizadorProvider)
+          .fetchEventosByOrganizador(organizerId, token);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final eventoProviderInstance = ref.watch(eventoProvider);
-    final eventos = eventoProviderInstance.eventos;
+    final eventoProvider = ref.watch(eventoByOrganizadorProvider);
 
-    final eventosFiltrados = organizadorService.filterEventosByCategory(
-      eventos,
-      selectedCategory,
-    );
-    final eventosFuturos = EventSorter.filterFutureEvents(eventosFiltrados);
-    final eventosOrdenados = EventSorter.sortEventsByDateAsc(eventosFuturos);
+    eventoProvider.eventos.sort((a, b) {
+      final dateA = DateTime.tryParse(a.start_time) ?? DateTime(9999, 12, 31);
+      final dateB = DateTime.tryParse(b.start_time) ?? DateTime(9999, 12, 31);
+      return dateA.compareTo(dateB);
+    });
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -117,94 +68,35 @@ class _OrganizadorScreenState extends ConsumerState<OrganizadorScreen> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             title: const Text(
-              'Eventos',
+              'Mis eventos',
               style: TextStyle(
                 fontSize: 24,
                 color: Colors.white,
               ),
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.person, color: Colors.white),
-                onPressed: () => _showProfileDialog(context),
-                tooltip: 'Perfil',
-              ),
-            ],
           ),
         ),
       ),
       body: Stack(
         children: [
           const BackgroundGradient(),
-          Column(
-            children: [
-              Expanded(
-                child: EventList(
-                  isLoading: eventoProviderInstance.isLoading,
-                  eventos: eventosOrdenados,
-                  ref: ref,
-                ),
-              ),
-            ],
-          ),
-          if (showFilterButtons)
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                ),
-              ),
-            ),
-          if (showFilterButtons)
-            Positioned(
-              bottom: 100,
-              right: 20,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  BuildFilter(
-                    icon: Icons.event,
-                    color: Colors.black,
-                    label: 'Todos los eventos',
-                    onPressed: _resetFilters,
-                  ),
-                  const SizedBox(height: 10),
-                  BuildFilter(
-                    icon: Icons.music_note,
-                    color: Colors.purple.shade600,
-                    label: 'Música',
-                    onPressed: () => _filterByCategory('Music'),
-                  ),
-                  const SizedBox(height: 10),
-                  BuildFilter(
-                    icon: Icons.sports_soccer,
-                    color: Colors.pinkAccent.shade400,
-                    label: 'Deporte',
-                    onPressed: () => _filterByCategory('Sport'),
-                  ),
-                  const SizedBox(height: 10),
-                  BuildFilter(
-                    icon: Icons.computer,
-                    color: Colors.deepPurple.shade800,
-                    label: 'Tecnología',
-                    onPressed: () => _filterByCategory('Technology'),
-                  ),
-                ],
-              ),
-            ),
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: FloatingActionButton(
-              backgroundColor: Colors.pinkAccent.shade400,
-              elevation: 0,
-              onPressed: _toggleFilterButtons,
-              shape: const CircleBorder(),
-              child: Icon(showFilterButtons ? Icons.close : Icons.filter_list),
-            ),
-          ),
+          if (eventoProvider.isLoading)
+            const Center(child: CircularProgressIndicator())
+          else
+            EventListByOrganizador(),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.pinkAccent.shade400,
+        elevation: 0,
+        onPressed: () {
+          context.go('/crearEvento');
+        },
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: const CustomNavigationBarOrganizadorWidget(
+        currentIndex: 0,
       ),
     );
   }
