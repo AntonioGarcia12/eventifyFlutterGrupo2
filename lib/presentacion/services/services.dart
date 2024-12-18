@@ -1,3 +1,4 @@
+export 'package:eventify/presentacion/services/crear_evento_services.dart';
 export 'package:eventify/presentacion/services/normal_service.dart';
 export 'package:eventify/presentacion/services/mis_eventos_services.dart';
 export 'package:eventify/presentacion/services/generic_event_card_services.dart';

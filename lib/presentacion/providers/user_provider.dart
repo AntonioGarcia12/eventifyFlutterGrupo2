@@ -1,4 +1,5 @@
 import 'package:eventify/infraestructuras/models/usuario.dart';
+import 'package:eventify/presentacion/services/users_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,8 @@ class UserProvider extends ChangeNotifier {
 
   List<Usuario> get usuarios => _usuarios;
   bool get isLoading => _isLoading;
+
+  final UserServices _userServices = UserServices();
 
   Future<void> fetchUsuarios() async {
     _isLoading = true;
@@ -49,6 +52,9 @@ class UserProvider extends ChangeNotifier {
                     id: userData['id'],
                     name: userData['name'] ?? 'Sin nombre',
                     email: userData['email'] ?? 'Sin correo electrónico',
+                    role: userData['role'] ?? 'Sin rol',
+                    actived: userData['actived'] ?? false,
+                    deleted: userData['deleted'] ?? false,
                   ),
                 ),
           );
@@ -61,6 +67,32 @@ class UserProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> fetchUsuario() async {
+    if (_usuarios.isNotEmpty) {
+      // Si ya se cargaron los usuarios, no vuelvas a cargarlos
+      return;
+    }
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      _usuarios = await _userServices.fetchUsuarios();
+    } catch (e) {
+      print("Error al cargar usuarios: $e");
+      throw e;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void clearUsuarios() {
+    _userServices.clearCachedUsuarios();
+    _usuarios = [];
+    notifyListeners();
   }
 
   void eliminarUsuario(int userId) {

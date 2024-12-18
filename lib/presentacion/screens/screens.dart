@@ -1,3 +1,6 @@
+export 'package:eventify/presentacion/screens/editar_eventos_screen.dart';
+export 'package:eventify/presentacion/screens/grafica_organizador_screen.dart';
+export 'package:eventify/presentacion/screens/crear_evento_screen.dart';
 export 'package:eventify/presentacion/screens/informe_screen.dart';
 export 'package:eventify/presentacion/screens/mis_eventos_screen.dart';
 export 'package:eventify/presentacion/screens/home_screens.dart';

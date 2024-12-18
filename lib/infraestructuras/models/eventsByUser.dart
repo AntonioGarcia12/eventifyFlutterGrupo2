@@ -3,7 +3,7 @@ class Eventsbyuser {
   final String title;
   final String description;
   final int organizer_id;
-  final int category_id;
+  final String category_name;
   final String start_time;
   final String end_time;
   final String location;
@@ -14,7 +14,7 @@ class Eventsbyuser {
       required this.title,
       required this.description,
       required this.organizer_id,
-      required this.category_id,
+      required this.category_name,
       required this.start_time,
       required this.end_time,
       required this.location,
@@ -30,7 +30,7 @@ class Eventsbyuser {
       end_time: eventData['end_time'] ?? 'Sin hora de fin',
       image_url: eventData['image_url'] ?? '',
       location: eventData['location'] ?? 'Sin ubicación',
-      category_id: eventData['category'] ?? 0,
+      category_name: eventData['category_name'] ?? '',
     );
   }
 }
