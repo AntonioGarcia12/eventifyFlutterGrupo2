@@ -85,7 +85,6 @@ class _GenericEventCardOrganizadorState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Información del Evento
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -116,7 +115,6 @@ class _GenericEventCardOrganizadorState
                           ),
                         ],
                       ),
-                      // Botones de Acción
                       Row(
                         children: [
                           ElevatedButton(

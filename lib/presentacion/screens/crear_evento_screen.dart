@@ -96,8 +96,7 @@ class _CrearEventoScreenState extends ConsumerState<CrearEventoScreen> {
 
       if (response['success'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(response['message'] ?? 'Evento creado con éxito')),
+          const SnackBar(content: Text('Evento creado con éxito')),
         );
 
         _formKey.currentState!.reset();
@@ -533,6 +532,7 @@ class _CrearEventoScreenState extends ConsumerState<CrearEventoScreen> {
               }
             }
           }
+          // ignore: empty_catches
         } catch (e) {}
       },
       validator: (value) {

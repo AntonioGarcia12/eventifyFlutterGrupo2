@@ -71,7 +71,6 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> fetchUsuario() async {
     if (_usuarios.isNotEmpty) {
-      // Si ya se cargaron los usuarios, no vuelvas a cargarlos
       return;
     }
 
@@ -81,8 +80,7 @@ class UserProvider extends ChangeNotifier {
     try {
       _usuarios = await _userServices.fetchUsuarios();
     } catch (e) {
-      print("Error al cargar usuarios: $e");
-      throw e;
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();

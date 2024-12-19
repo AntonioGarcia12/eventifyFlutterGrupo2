@@ -7,7 +7,6 @@ class UserServices {
   List<Usuario>? _cachedUsuarios;
 
   Future<List<Usuario>> fetchUsuarios() async {
-    // Si ya hay datos en caché, devuélvelos directamente
     if (_cachedUsuarios != null) {
       return _cachedUsuarios!;
     }
@@ -61,32 +60,29 @@ class UserServices {
             return [];
           }
         } else if (response.statusCode == 429) {
-          print(
-              "Rate limit alcanzado al fetchUsuarios. Reintentando en $delaySeconds segundos...");
           await Future.delayed(Duration(seconds: delaySeconds));
           retryCount++;
-          delaySeconds *= 2; // Exponencial backoff
+          delaySeconds *= 2;
         } else {
           throw Exception(
               'Error al obtener los usuarios: ${response.reasonPhrase}');
         }
       } catch (e) {
-        print("Error al obtener usuarios: $e");
         throw Exception('Error al obtener usuarios: $e');
       }
     }
 
-    throw Exception('Máximo número de reintentos alcanzado para fetchUsuarios');
+    throw Exception('Máximo número de reintentos alcanzado');
   }
 
   void clearCachedUsuarios() {
-    _cachedUsuarios = null; // Permite recargar los datos si es necesario
+    _cachedUsuarios = null;
   }
 
   Future<void> saveUsuarioIdsByRoleUToPrefs() async {
     final usuarios = await fetchUsuarios();
     final ids = usuarios
-        .where((usuario) => usuario.role == 'u') // Filtra solo por el rol "u"
+        .where((usuario) => usuario.role == 'u')
         .map((usuario) => usuario.id.toString())
         .toList();
 

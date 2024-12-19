@@ -1,5 +1,4 @@
 import 'package:eventify/infraestructuras/models/eventsByOrganizador.dart';
-import 'package:eventify/presentacion/providers/evento_by_organizador_provider.dart';
 import 'package:eventify/presentacion/services/organizador_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
