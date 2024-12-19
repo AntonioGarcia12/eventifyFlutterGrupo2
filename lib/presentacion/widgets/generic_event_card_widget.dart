@@ -57,12 +57,7 @@ class _GenericEventCardState extends State<GenericEventCard> {
                 borderRadius: const BorderRadius.horizontal(
                   left: Radius.circular(10),
                 ),
-                child: Image.network(
-                  widget.evento.image_url,
-                  width: 130,
-                  height: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: _buildEventImage(),
               ),
               Expanded(
                 child: Padding(
@@ -217,6 +212,50 @@ class _GenericEventCardState extends State<GenericEventCard> {
         ),
       ),
     );
+  }
+
+  Widget _buildEventImage() {
+    if (widget.evento.image_url.isEmpty) {
+      return Image.asset(
+        'assets/images/default_event_image.png',
+        width: 130,
+        height: double.infinity,
+        fit: BoxFit.cover,
+      );
+    } else {
+      return Image.network(
+        widget.evento.image_url,
+        width: 130,
+        height: double.infinity,
+        fit: BoxFit.cover,
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            width: 130,
+            height: double.infinity,
+            color: Colors.grey.shade300,
+            child: Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        (loadingProgress.expectedTotalBytes!)
+                    : null,
+              ),
+            ),
+          );
+        },
+        errorBuilder:
+            (BuildContext context, Object exception, StackTrace? stackTrace) {
+          return Image.asset(
+            'assets/images/logo.png',
+            width: 130,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          );
+        },
+      );
+    }
   }
 
   String _formatDateTime(String dateTimeString, {bool includeTime = true}) {

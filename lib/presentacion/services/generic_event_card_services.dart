@@ -1,5 +1,8 @@
 import 'package:eventify/infraestructuras/models/evento.dart';
+import 'package:eventify/infraestructuras/models/eventsByOrganizador.dart';
+import 'package:eventify/presentacion/providers/evento_by_organizador_provider.dart';
 import 'package:eventify/presentacion/screens/screens.dart';
+import 'package:eventify/presentacion/services/organizador_service.dart';
 import 'package:eventify/presentacion/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -253,5 +256,23 @@ class GenericEventCardServices {
         ],
       ),
     );
+  }
+
+  Future<void> borrarEvento(Eventsbyorganizador evento) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    int? id = prefs.getInt('evento_id');
+    try {
+      final organizadorService = ref.read(organizadorServiceProvider);
+      await organizadorService.deleteEvent(evento.id);
+
+      await ref
+          .read(eventoByOrganizadorProvider)
+          .fetchEventosByOrganizador(id!, token!);
+
+      _showSnackBar('Evento eliminado correctamente.');
+    } catch (e) {
+      _showSnackBar('Error al eliminar el evento: $e');
+    }
   }
 }
