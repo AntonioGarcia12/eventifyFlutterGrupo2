@@ -52,6 +52,9 @@ class EventList extends StatelessWidget {
       case 'technology':
         borderColor = const Color(0xFF4CAF50);
         break;
+      case 'cultural':
+        borderColor = const Color(0xFF9C27B0);
+        break;
       default:
         borderColor = Colors.grey;
     }

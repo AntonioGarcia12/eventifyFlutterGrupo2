@@ -193,6 +193,13 @@ class _MisEventosScreenState extends ConsumerState<MisEventosScreen> {
                     label: 'Tecnología',
                     onPressed: () => _filterByCategory('Technology'),
                   ),
+                  const SizedBox(height: 10),
+                  BuildFilter(
+                    icon: Icons.theater_comedy_rounded,
+                    color: Colors.lightBlue,
+                    label: 'Cultural',
+                    onPressed: () => _filterByCategory('Cultural'),
+                  ),
                 ],
               ),
             ),
