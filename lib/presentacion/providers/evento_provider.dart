@@ -53,6 +53,14 @@ class EventoProvider extends ChangeNotifier {
                   end_time: eventData['end_time'] ?? 'Sin hora de fin',
                   image_url: eventData['image_url'] ?? '',
                   category: eventData['category'] ?? 'Sin categoría',
+                  location: eventData['location'] ?? 'Sin ubicación',
+                  latitude: eventData['latitude'] != null
+                      ? double.tryParse(eventData['latitude'].toString()) ?? 0.0
+                      : 0.0,
+                  longitude: eventData['longitude'] != null
+                      ? double.tryParse(eventData['longitude'].toString()) ??
+                          0.0
+                      : 0.0,
                 )),
           );
           notifyListeners();

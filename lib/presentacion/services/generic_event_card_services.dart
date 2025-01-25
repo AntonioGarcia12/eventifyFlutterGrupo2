@@ -60,6 +60,8 @@ class GenericEventCardServices {
         userId: userId,
         eventId: evento.id,
         registeredAt: DateTime.now(),
+        eventTitle: evento.title,
+        start_time: DateTime.parse(evento.star_time),
       );
 
       ref.read(eventoProvider.notifier).removeEvent(evento.id);

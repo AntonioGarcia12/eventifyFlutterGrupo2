@@ -70,4 +70,9 @@ final appRouter = GoRouter(initialLocation: '/home', routes: [
       return EditarEventosScreen(eventId: eventId);
     },
   ),
+  GoRoute(
+    path: '/cerca',
+    name: CercaScreen.name,
+    builder: (context, state) => const CercaScreen(),
+  ),
 ]);

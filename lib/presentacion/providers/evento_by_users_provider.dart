@@ -12,7 +12,7 @@ final eventoByUserProvider = ChangeNotifierProvider<EventoByUserProvider>(
 );
 
 class EventoByUserProvider extends ChangeNotifier {
-  List<Eventsbyuser> _eventos = [];
+  final List<Eventsbyuser> _eventos = [];
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;

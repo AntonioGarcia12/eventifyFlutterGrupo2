@@ -5,6 +5,9 @@ class Evento {
   final String end_time;
   final String image_url;
   final String category;
+  final String location;
+  final double latitude;
+  final double longitude;
 
   Evento({
     required this.id,
@@ -13,5 +16,8 @@ class Evento {
     required this.end_time,
     required this.image_url,
     required this.category,
+    required this.location,
+    required this.latitude,
+    required this.longitude,
   });
 }

@@ -36,6 +36,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         context.go('/informe');
         break;
       case 3:
+        context.go('/cerca');
+        break;
+      case 4:
         _showProfileDialog(context);
         break;
     }
@@ -133,6 +136,10 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                 BottomNavigationBarItem(
                   icon: Icon(Icons.edit_document),
                   label: 'Informe',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.location_on),
+                  label: 'Cerca',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.person),
