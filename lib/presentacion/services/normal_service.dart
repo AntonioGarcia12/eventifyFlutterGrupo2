@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventify/infraestructuras/models/evento.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -48,6 +50,8 @@ class NormalService {
     required int userId,
     required int eventId,
     required DateTime registeredAt,
+    String? eventTitle,
+    DateTime? start_time,
   }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
@@ -75,6 +79,12 @@ class NormalService {
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
       if (responseData['success'] == true) {
+        await _registerEventInFirebase(
+          eventId,
+          registeredAt,
+          eventTitle ?? 'Título no disponible',
+          start_time ?? DateTime.now(),
+        );
         ref.read(eventoProvider).removeEvent(eventId);
       } else {
         throw Exception(
@@ -82,6 +92,40 @@ class NormalService {
       }
     } else {
       throw Exception('Error al registrar al evento: ${response.reasonPhrase}');
+    }
+  }
+
+  Future<void> _registerEventInFirebase(int eventId, DateTime eventStartTime,
+      String eventTitle, DateTime start_time) async {
+    try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken == null) {
+        throw Exception('No se pudo obtener el token FCM del dispositivo.');
+      }
+
+      final collection = FirebaseFirestore.instance
+          .collection('event_registrations')
+          .doc(eventId.toString());
+
+      final eventDoc = await collection.get();
+      if (!eventDoc.exists) {
+        await collection.set({
+          'event_id': eventId,
+          'event_start_time': Timestamp.fromDate(eventStartTime),
+          'event_title': eventTitle,
+          'start_time': Timestamp.fromDate(start_time),
+          'fcm_token': [fcmToken],
+        });
+      } else {
+        await collection.update({
+          'event_start_time': Timestamp.fromDate(eventStartTime),
+          'event_title': eventTitle,
+          'start_time': Timestamp.fromDate(start_time),
+          'fcm_token': FieldValue.arrayUnion([fcmToken]),
+        });
+      }
+    } catch (e) {
+      throw Exception('Error al registrar en Firebase: $e');
     }
   }
 

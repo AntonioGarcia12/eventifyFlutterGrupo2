@@ -151,7 +151,6 @@ class _CercaScreenState extends ConsumerState<CercaScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Imagen del evento
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16.0),
                   child: Image.network(
@@ -172,7 +171,6 @@ class _CercaScreenState extends ConsumerState<CercaScreen> {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-
                 Text(
                   evento.title,
                   style: const TextStyle(
@@ -183,7 +181,6 @@ class _CercaScreenState extends ConsumerState<CercaScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12.0),
-
                 Row(
                   children: [
                     const Icon(Icons.calendar_today,
@@ -218,7 +215,6 @@ class _CercaScreenState extends ConsumerState<CercaScreen> {
                   ],
                 ),
                 const SizedBox(height: 12.0),
-
                 Row(
                   children: [
                     const Icon(Icons.location_on,
@@ -236,7 +232,6 @@ class _CercaScreenState extends ConsumerState<CercaScreen> {
                   ],
                 ),
                 const SizedBox(height: 20.0),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
