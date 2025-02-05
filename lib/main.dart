@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventify/config/theme/app_theme.dart';
 import 'package:eventify/config/theme/router/app_router.dart';
-import 'package:eventify/presentacion/services/notificacion_services.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,8 +24,13 @@ void main() async {
     persistenceEnabled: false,
   );
 
-  final notificationService = NotificationService();
-  await notificationService.setupFirebaseMessaging();
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
 
   runApp(const ProviderScope(child: MyApp()));
 }

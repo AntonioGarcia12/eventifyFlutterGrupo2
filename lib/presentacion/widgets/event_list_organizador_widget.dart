@@ -5,6 +5,8 @@ import 'package:eventify/presentacion/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EventListByOrganizador extends ConsumerWidget {
+  const EventListByOrganizador({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(eventoByOrganizadorProvider);

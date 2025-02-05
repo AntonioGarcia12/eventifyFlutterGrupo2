@@ -72,9 +72,7 @@ class _EditarEventosScreenState extends ConsumerState<EditarEventosScreen> {
         orElse: () => throw Exception('Categoría no encontrada.'),
       );
 
-      // Parsear las fechas de cadena a DateTime
-      DateTime parsedStartDate =
-          DateTime.parse(event.start_time); // Asegúrate que el formato sea ISO
+      DateTime parsedStartDate = DateTime.parse(event.start_time);
       DateTime parsedEndDate = DateTime.parse(event.end_time);
 
       setState(() {
@@ -629,6 +627,7 @@ class _EditarEventosScreenState extends ConsumerState<EditarEventosScreen> {
               });
             }
           }
+          // ignore: empty_catches
         } catch (e) {}
       },
       validator: (value) {
